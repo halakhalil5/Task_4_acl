@@ -72,7 +72,9 @@ test('lists public perks and responds to merchant filtering', async () => {
 
   // Check summary
   expect(screen.getByText(/showing/i)).toHaveTextContent('Showing');
-});
+
+   expect(screen.getByText(seededPerk.title)).toBeInTheDocument();
+  });
 
 
 });
