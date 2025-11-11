@@ -22,6 +22,10 @@ describe('Authentication controller integration', () => {
     email: `test.runner.${uniqueSuffix}@example.com`,
     password: `P@ssw0rd-${uniqueSuffix.slice(0, 8)}`
   };
+  const login_credentials={
+    email: `test.runner.${uniqueSuffix}@example.com`,
+    password: `P@ssw0rd-${uniqueSuffix.slice(0, 8)}`
+  };
 
   let serverInstance;
   let baseUrl;
@@ -73,8 +77,22 @@ describe('Authentication controller integration', () => {
   - store the issued token for use in subsequent tests
   */
   test('authenticates the same user and issues a fresh JWT', async () => {
-    // This test will always fail until the TODO above is implemented.
-    expect(true).toBe(false);
+    const response = await fetch(`${baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(login_credentials)
+    });
+
+    const payload = await response.json();
+    expect(response.status).toBe(200);
+    expect(payload).toHaveProperty('token');
+    expect(typeof payload.token).toBe('string');
+    expect(payload.token.length).toBeGreaterThan(0);
+
+    expect(payload.user).toBeDefined();
+    expect(payload.user.email).toBe(credentials.email.toLowerCase());
+    global.authToken = payload.token;
+    
   });
 
   test('returns the public profile for the currently authenticated user', async () => {

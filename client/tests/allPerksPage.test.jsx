@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor,waitForElementToBeRemoved  } from '@testing-library/react';
 import { Routes, Route } from 'react-router-dom';
 
 import AllPerks from '../src/pages/AllPerks.jsx';
@@ -50,8 +50,31 @@ describe('AllPerks page (Directory)', () => {
   - verify the summary text reflects the number of matching perks
   */
 
-  test('lists public perks and responds to merchant filtering', async () => {
-    // This will always fail until the TODO above is implemented.
-    expect(true).toBe(false);
-  });
+test('lists public perks and responds to merchant filtering', async () => {
+  const seededPerk = global.__TEST_CONTEXT__.seededPerk;
+
+  renderWithRouter(
+    <Routes>
+      <Route path="/explore" element={<AllPerks />} />
+    </Routes>,
+    { initialEntries: ['/explore'] }
+  );
+
+  // Wait for initial fetch
+  await screen.findByText(seededPerk.title);
+
+  // Select merchant from dropdown
+  const merchantSelect = screen.getByRole('combobox');
+  fireEvent.change(merchantSelect, { target: { value: seededPerk.merchant } });
+
+  // Wait for filtered results
+  await screen.findByText(seededPerk.title);
+
+  // Check summary
+  expect(screen.getByText(/showing/i)).toHaveTextContent('Showing');
 });
+
+
+});
+
+
